@@ -1,8 +1,12 @@
 /**
  * PIVOT AIDE TAX — BOOKING & CONSULTATION HANDLER
  * Provides interactive scheduling modal for consultations, scoping calls,
- * Second Look reviews, and urgent notice triage.
+ * Second Look reviews, and urgent notice triage with document/PDF upload support.
  */
+
+// Formspree / FormSubmit endpoint configuration:
+// When client provides Formspree endpoint, insert it below (e.g. 'https://formspree.io/f/YOUR_ID')
+window.PIVOT_AIDE_FORMSPREE_ENDPOINT = '';
 
 window.openBookingModal = function(serviceType = 'general') {
   if (serviceType === 'consultation') {
@@ -26,7 +30,102 @@ window.openBookingModal = function(serviceType = 'general') {
     }
   }
 
+  if (typeof updateBookingFilePrompt === 'function') {
+    updateBookingFilePrompt(modal, select ? select.value : serviceType);
+  }
+
   openModal('booking-modal');
+};
+
+window.handleServiceChange = function(select) {
+  if (select.value === 'consultation') {
+    window.open('https://pivotaide.odoo.com/appointment/1', '_blank', 'noopener');
+  }
+  const modal = select.closest('.modal-panel') || document.getElementById('booking-modal');
+  if (modal && typeof updateBookingFilePrompt === 'function') {
+    updateBookingFilePrompt(modal, select.value);
+  }
+};
+
+window.updateBookingFilePrompt = function(container, serviceValue) {
+  if (!container) return;
+  const label = container.querySelector('#booking-file-label') || container.querySelector('#page-booking-file-label');
+  const sub = container.querySelector('#booking-file-sub') || container.querySelector('#page-booking-file-sub');
+  if (!label || !sub) return;
+
+  if (serviceValue === 'triage') {
+    label.innerHTML = 'Upload IRS / State Notice <span style="font-weight:600;color:var(--blue);font-size:0.75rem;text-transform:none">(Recommended for 2-Day Triage)</span>';
+    sub.textContent = 'Attach your IRS letter (CP2000, 5071C, notice of deficiency, or state letter)';
+  } else if (serviceValue === 'second-look') {
+    label.innerHTML = 'Upload Prior Return <span style="font-weight:400;color:var(--ink-2);font-size:0.75rem;text-transform:none">(Optional &middot; PDF or Scan)</span>';
+    sub.textContent = 'Upload up to 3 years of filed returns for forensic review';
+  } else {
+    label.innerHTML = 'Upload Notice or Document <span style="font-weight:400;color:var(--ink-2);font-size:0.75rem;text-transform:none">(Optional &middot; PDF, Images &middot; Max 10MB)</span>';
+    sub.textContent = 'IRS letter, tax form, or prior return (PDF, PNG, JPG, DOC)';
+  }
+};
+
+window.handleFileSelected = function(input, labelId, subId) {
+  const label = document.getElementById(labelId);
+  const sub = subId ? document.getElementById(subId) : null;
+  const box = input.closest('.file-upload-box') || (input.parentElement ? input.parentElement.querySelector('.file-upload-box') : null);
+  if (!label) return;
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+    label.innerHTML = `<span style="color:var(--ok,#1f8a54);font-weight:600">&#10003; Document Attached:</span> <span style="color:var(--ink);font-weight:500">${file.name}</span>`;
+    if (sub) {
+      sub.innerHTML = `File size: <strong>${sizeMb} MB</strong> &middot; Click to change or drag another file`;
+    }
+    if (box) {
+      box.style.borderColor = 'var(--blue)';
+      box.style.background = 'rgba(1, 159, 255, 0.06)';
+    }
+  } else {
+    label.textContent = 'Choose a PDF or drag & drop here';
+    if (sub) {
+      sub.textContent = 'IRS letter, CP2000, 5071C, state notice, or prior return';
+    }
+    if (box) {
+      box.style.borderColor = 'var(--line)';
+      box.style.background = 'var(--wash, #F8FAFC)';
+    }
+  }
+};
+
+window.setupFileDropZone = function(box, inputId, labelId, subId) {
+  if (!box || box._dragReady) return;
+  box._dragReady = true;
+
+  ['dragenter', 'dragover'].forEach(function(eventName) {
+    box.addEventListener(eventName, function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      box.style.borderColor = 'var(--blue)';
+      box.style.background = 'rgba(1, 159, 255, 0.12)';
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(function(eventName) {
+    box.addEventListener(eventName, function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      box.style.borderColor = 'var(--line)';
+      box.style.background = 'var(--wash, #F8FAFC)';
+    });
+  });
+
+  box.addEventListener('drop', function(e) {
+    const dt = e.dataTransfer;
+    if (dt && dt.files && dt.files.length) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.files = dt.files;
+        handleFileSelected(input, labelId, subId);
+      }
+    }
+  });
 };
 
 function createBookingModalDOM() {
@@ -43,13 +142,13 @@ function createBookingModalDOM() {
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" onsubmit="handleBookingSubmit(event)">
-          <input type="hidden" name="_subject" value="Pivot Aide Tax — Modal Consultation Request">
+        <form id="booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" enctype="multipart/form-data" onsubmit="handleBookingSubmit(event)">
+          <input type="hidden" name="_subject" value="Pivot Aide Tax — Consultation / Notice Triage Request">
           <input type="hidden" name="_captcha" value="false">
           <input type="hidden" name="_template" value="table">
           <div class="form-group">
             <label class="form-label" for="booking-service">Service / Consultation Type</label>
-            <select id="booking-service" name="service" class="form-control" required onchange="if(this.value==='consultation'){window.open('https://pivotaide.odoo.com/appointment/1','_blank','noopener');}">
+            <select id="booking-service" name="service" class="form-control" required onchange="handleServiceChange(this)">
               <option value="scoping">The Standing File — 45-Minute Scoping Call (Free)</option>
               <option value="second-look">Second Look — 3-Year Prior Return Review (Free)</option>
               <option value="triage">Notice Triage — IRS / State Letter Review ($0 Review)</option>
@@ -80,6 +179,27 @@ function createBookingModalDOM() {
             <textarea id="booking-notes" name="notes" class="form-control" rows="3" placeholder="Tell us about your tax filing, business entity, or any letter received..."></textarea>
           </div>
 
+          <div class="form-group" id="booking-file-group">
+            <label class="form-label" id="booking-file-label" for="booking-file">Upload Notice or Document <span style="font-weight:400;color:var(--ink-2);font-size:0.75rem;text-transform:none">(PDF, Images &middot; Max 10MB)</span></label>
+            <div class="file-upload-box" id="booking-dropzone" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--wash,#F8FAFC);cursor:pointer;transition:border-color var(--transition-fast), background var(--transition-fast);" onclick="document.getElementById('booking-file').click()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div style="flex:1;min-width:0">
+                <div id="booking-file-name" style="font-size:0.86rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  Choose a PDF or drag &amp; drop here
+                </div>
+                <div id="booking-file-sub" style="font-size:0.75rem;color:var(--ink-2);margin-top:2px">
+                  IRS letter, CP2000, 5071C, state notice, or prior return
+                </div>
+              </div>
+              <button type="button" class="btn btn-o" style="padding:5px 12px;font-size:0.78rem;pointer-events:none;flex:none">Browse</button>
+            </div>
+            <input type="file" id="booking-file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" style="display:none" onchange="handleFileSelected(this, 'booking-file-name', 'booking-file-sub')">
+          </div>
+
           <div class="callout" style="margin-bottom:18px;font-size:.82rem">
             <span class="h">Our Commitment</span>
             <p>We do not sell client data, we do not employ aggressive sales reps, and we review submissions within two business days.</p>
@@ -94,6 +214,8 @@ function createBookingModalDOM() {
     </div>
   `;
   document.body.appendChild(modalDiv);
+
+  setupFileDropZone(modalDiv.querySelector('#booking-dropzone'), 'booking-file', 'booking-file-name', 'booking-file-sub');
 }
 
 window.handleBookingSubmit = function(e) {
@@ -101,55 +223,61 @@ window.handleBookingSubmit = function(e) {
   const form = e.target;
 
   // Gather fields
-  const nameInput  = form.querySelector('#booking-name')  || form.querySelector('#page-booking-name')  || form.querySelector('input[type="text"]');
-  const emailInput = form.querySelector('#booking-email') || form.querySelector('#page-booking-email') || form.querySelector('input[type="email"]');
-  const phoneInput = form.querySelector('#booking-phone') || form.querySelector('#page-booking-phone') || form.querySelector('input[type="tel"]');
-  const notesInput = form.querySelector('#booking-notes') || form.querySelector('#page-booking-notes') || form.querySelector('textarea');
-  const serviceSelect = form.querySelector('#booking-service') || form.querySelector('#page-booking-service') || form.querySelector('select');
+  const nameInput  = form.querySelector('#booking-name')  || form.querySelector('#page-booking-name')  || form.querySelector('input[name="name"]');
+  const emailInput = form.querySelector('#booking-email') || form.querySelector('#page-booking-email') || form.querySelector('input[name="email"]');
+  const phoneInput = form.querySelector('#booking-phone') || form.querySelector('#page-booking-phone') || form.querySelector('input[name="phone"]');
+  const notesInput = form.querySelector('#booking-notes') || form.querySelector('#page-booking-notes') || form.querySelector('textarea[name="notes"]');
+  const serviceSelect = form.querySelector('#booking-service') || form.querySelector('#page-booking-service') || form.querySelector('select[name="service"]');
+  const fileInput  = form.querySelector('input[type="file"]');
 
   const name    = nameInput    ? nameInput.value    : 'Taxpayer';
   const email   = emailInput   ? emailInput.value   : '';
   const phone   = phoneInput   ? phoneInput.value   : '';
   const notes   = notesInput   ? notesInput.value   : '';
   const service = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex].text : 'General Inquiry';
+  const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
 
-  // Build FormSubmit payload and POST to Tax@pivotaide.com via AJAX
-  const submitUrl = 'https://formsubmit.co/ajax/Tax@pivotaide.com';
-  const payload = {
-    name: name,
-    email: email,
-    phone: phone,
-    service: service,
-    notes: notes,
-    _subject: 'Pivot Aide Tax — Appointment Request: ' + service,
-    _template: 'table',
-    _captcha: 'false'
-  };
+  // Build FormData payload (compatible with both Formspree and FormSubmit, supports file attachments)
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('phone', phone);
+  formData.append('service', service);
+  formData.append('notes', notes);
+  formData.append('_subject', 'Pivot Aide Tax — Appointment / Notice Request: ' + service);
+  formData.append('_template', 'table');
+  formData.append('_captcha', 'false');
+
+  if (hasFile) {
+    formData.append('attachment', fileInput.files[0]);
+  }
 
   // Show sending state
   const submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026'; }
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = hasFile ? 'Uploading Letter\u2026' : 'Sending\u2026';
+  }
+
+  // Target endpoint: Formspree (if configured) or fallback to FormSubmit
+  const targetEndpoint = window.PIVOT_AIDE_FORMSPREE_ENDPOINT || form.getAttribute('action') || 'https://formsubmit.co/Tax@pivotaide.com';
+  const submitUrl = targetEndpoint.includes('formsubmit.co') && !targetEndpoint.includes('/ajax/')
+    ? targetEndpoint.replace('formsubmit.co/', 'formsubmit.co/ajax/')
+    : targetEndpoint;
 
   fetch(submitUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
-    body: JSON.stringify(payload)
+    body: formData
   })
     .then(function(res) {
       showBookingSuccess(form, name, email);
     })
     .catch(function() {
-      // Fallback: no-cors fetch
-      var formData = new FormData(form);
-      if (!formData.get('name')) formData.append('name', name);
-      if (!formData.get('email')) formData.append('email', email);
-      if (!formData.get('phone')) formData.append('phone', phone);
-      if (!formData.get('service')) formData.append('service', service);
-      if (!formData.get('notes')) formData.append('notes', notes);
-      fetch('https://formsubmit.co/Tax@pivotaide.com', { method: 'POST', body: formData, mode: 'no-cors' })
+      // Fallback
+      fetch(targetEndpoint, { method: 'POST', body: formData, mode: 'no-cors' })
         .finally(function() {
           showBookingSuccess(form, name, email);
         });

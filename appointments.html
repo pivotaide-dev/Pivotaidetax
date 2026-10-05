@@ -176,13 +176,13 @@
 
           <!-- Direct Form -->
           <div class="card" style="padding:32px;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:0 4px 16px rgba(12,29,40,.04)">
-            <form id="in-page-booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" onsubmit="handleBookingSubmit(event)">
-              <input type="hidden" name="_subject" value="Pivot Aide Tax — Appointment Request">
+            <form id="in-page-booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" enctype="multipart/form-data" onsubmit="handleBookingSubmit(event)">
+              <input type="hidden" name="_subject" value="Pivot Aide Tax — Appointment / Notice Request">
               <input type="hidden" name="_captcha" value="false">
               <input type="hidden" name="_template" value="table">
               <div class="form-group">
                 <label class="form-label" for="page-booking-service">Consultation Scope</label>
-                <select id="page-booking-service" name="service" class="form-control" required onchange="if(this.value==='consultation'){window.open('https://pivotaide.odoo.com/appointment/1','_blank','noopener');}">
+                <select id="page-booking-service" name="service" class="form-control" required onchange="handleServiceChange(this)">
                   <option value="scoping">The Standing File — 45-Minute Scoping Call</option>
                   <option value="second-look">Second Look — 3-Year Prior Return Review</option>
                   <option value="triage">Notice Triage — IRS or State Letter Review</option>
@@ -211,6 +211,27 @@
               <div class="form-group">
                 <label class="form-label" for="page-booking-notes">Notes / Tax Year / Notice Details</label>
                 <textarea id="page-booking-notes" name="notes" class="form-control" rows="3" placeholder="Describe your filing situation, business entity, or notice details..."></textarea>
+              </div>
+
+              <div class="form-group" id="page-booking-file-group">
+                <label class="form-label" id="page-booking-file-label" for="page-booking-file">Upload Notice or Document <span style="font-weight:400;color:var(--ink-2);font-size:0.75rem;text-transform:none">(PDF, Images &middot; Max 10MB)</span></label>
+                <div class="file-upload-box" id="page-booking-dropzone" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--wash,#F8FAFC);cursor:pointer;transition:border-color var(--transition-fast), background var(--transition-fast);" onclick="document.getElementById('page-booking-file').click()">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <div style="flex:1;min-width:0">
+                    <div id="page-booking-file-name" style="font-size:0.86rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                      Choose a PDF or drag &amp; drop here
+                    </div>
+                    <div id="page-booking-file-sub" style="font-size:0.75rem;color:var(--ink-2);margin-top:2px">
+                      IRS letter, CP2000, 5071C, state notice, or prior return
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-o" style="padding:5px 12px;font-size:0.78rem;pointer-events:none;flex:none">Browse</button>
+                </div>
+                <input type="file" id="page-booking-file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" style="display:none" onchange="handleFileSelected(this, 'page-booking-file-name', 'page-booking-file-sub')">
               </div>
 
               <button type="submit" class="btn btn-p" style="width:100%;margin-top:8px">Submit Appointment Request &rarr;</button>
