@@ -136,12 +136,12 @@
             <button class="btn btn-g" style="margin-top:14px" onclick="openBookingModal('triage')">Upload Notice</button>
           </div>
 
-          <div class="card">
+          <div class="card" onclick="window.open('https://pivotaide.odoo.com/appointment/1', '_blank', 'noopener')" style="cursor:pointer">
             <span class="tag"><b>General</b> · Free</span>
-            <h3>1-Hour Tax Consultation</h3>
+            <h3><a href="https://pivotaide.odoo.com/appointment/1" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">1-Hour Tax Consultation</a></h3>
             <p>General strategy conversation for individuals moving into new business entities, buying commercial property, or facing multi-state filing.</p>
             <div class="meta">Free · 60 minutes</div>
-            <button class="btn btn-o" style="margin-top:14px" onclick="openBookingModal('consultation')">Book 1 Hour</button>
+            <a class="btn btn-o" style="margin-top:14px;display:inline-block" href="https://pivotaide.odoo.com/appointment/1" target="_blank" rel="noopener">Book 1-Hour Tax Consultation</a>
           </div>
         </div>
       </div>
@@ -180,14 +180,17 @@
 
           <!-- Direct Form -->
           <div class="card" style="padding:32px;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:0 4px 16px rgba(12,29,40,.04)">
-            <form id="in-page-booking-form" onsubmit="handleBookingSubmit(event)">
+            <form id="in-page-booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" onsubmit="handleBookingSubmit(event)">
+              <input type="hidden" name="_subject" value="Pivot Aide Tax — Appointment Request">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
               <div class="form-group">
                 <label class="form-label" for="page-booking-service">Consultation Scope</label>
-                <select id="page-booking-service" class="form-control" required>
+                <select id="page-booking-service" name="service" class="form-control" required onchange="if(this.value==='consultation'){window.open('https://pivotaide.odoo.com/appointment/1','_blank','noopener');}">
                   <option value="scoping">The Standing File — 45-Minute Scoping Call</option>
                   <option value="second-look">Second Look — 3-Year Prior Return Review</option>
                   <option value="triage">Notice Triage — IRS or State Letter Review</option>
-                  <option value="consultation">General Tax Consultation (1 Hour)</option>
+                  <option value="consultation">General Tax Consultation (1 Hour) — [Redirects to Odoo]</option>
                   <option value="quickprepare">QuickPrepare Tax Filing ($295 Deposit)</option>
                   <option value="business">Monthly Bookkeeping &amp; Payroll Onboarding</option>
                 </select>
@@ -196,22 +199,22 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                 <div class="form-group">
                   <label class="form-label" for="page-booking-name">Full Name</label>
-                  <input type="text" id="page-booking-name" class="form-control" placeholder="John Smith" required>
+                  <input type="text" id="page-booking-name" name="name" class="form-control" placeholder="John Smith" required>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="page-booking-phone">Phone</label>
-                  <input type="tel" id="page-booking-phone" class="form-control" placeholder="(571) 000-0000" required>
+                  <input type="tel" id="page-booking-phone" name="phone" class="form-control" placeholder="(571) 000-0000" required>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="page-booking-email">Email Address</label>
-                <input type="email" id="page-booking-email" class="form-control" placeholder="john@example.com" required>
+                <input type="email" id="page-booking-email" name="email" class="form-control" placeholder="john@example.com" required>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="page-booking-notes">Notes / Tax Year / Notice Details</label>
-                <textarea id="page-booking-notes" class="form-control" rows="3" placeholder="Describe your filing situation, business entity, or notice details..."></textarea>
+                <textarea id="page-booking-notes" name="notes" class="form-control" rows="3" placeholder="Describe your filing situation, business entity, or notice details..."></textarea>
               </div>
 
               <button type="submit" class="btn btn-p" style="width:100%;margin-top:8px">Submit Appointment Request &rarr;</button>
@@ -234,7 +237,7 @@
           <p class="small">Income tax is all we do. Year-round strategy, filing, compliance, and IRS representation for individuals and small businesses in all fifty states.</p>
           <p class="small" style="margin-top:14px">
             <strong>Tel: (571) 587-7187</strong><br>
-            tax@pivotaide.com<br>
+            Tax@pivotaide.com<br>
             6475 New Hampshire Ave, Hyattsville, MD 20783
           </p>
         </div>

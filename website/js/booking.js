@@ -5,6 +5,10 @@
  */
 
 window.openBookingModal = function(serviceType = 'general') {
+  if (serviceType === 'consultation') {
+    window.open('https://pivotaide.odoo.com/appointment/1', '_blank', 'noopener');
+    return;
+  }
   let modal = document.getElementById('booking-modal');
   if (!modal) {
     createBookingModalDOM();
@@ -39,14 +43,17 @@ function createBookingModalDOM() {
         <button type="button" class="modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="booking-form" onsubmit="handleBookingSubmit(event)">
+        <form id="booking-form" action="https://formsubmit.co/Tax@pivotaide.com" method="POST" onsubmit="handleBookingSubmit(event)">
+          <input type="hidden" name="_subject" value="Pivot Aide Tax — Modal Consultation Request">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_template" value="table">
           <div class="form-group">
             <label class="form-label" for="booking-service">Service / Consultation Type</label>
-            <select id="booking-service" class="form-control" required>
+            <select id="booking-service" name="service" class="form-control" required onchange="if(this.value==='consultation'){window.open('https://pivotaide.odoo.com/appointment/1','_blank','noopener');}">
               <option value="scoping">The Standing File — 45-Minute Scoping Call (Free)</option>
               <option value="second-look">Second Look — 3-Year Prior Return Review (Free)</option>
               <option value="triage">Notice Triage — IRS / State Letter Review ($0 Review)</option>
-              <option value="consultation">General Tax Consultation (1 Hour, Free)</option>
+              <option value="consultation">General Tax Consultation (1 Hour, Free) — [Redirects to Odoo]</option>
               <option value="quickprepare">QuickPrepare Filing ($295 Deposit)</option>
               <option value="business">Business & Bookkeeping Onboarding</option>
             </select>
@@ -55,22 +62,22 @@ function createBookingModalDOM() {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="form-group">
               <label class="form-label" for="booking-name">Full Name</label>
-              <input type="text" id="booking-name" class="form-control" placeholder="Jane Doe" required>
+              <input type="text" id="booking-name" name="name" class="form-control" placeholder="Jane Doe" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="booking-phone">Phone Number</label>
-              <input type="tel" id="booking-phone" class="form-control" placeholder="(571) 000-0000" required>
+              <input type="tel" id="booking-phone" name="phone" class="form-control" placeholder="(571) 000-0000" required>
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="booking-email">Email Address</label>
-            <input type="email" id="booking-email" class="form-control" placeholder="jane@example.com" required>
+            <input type="email" id="booking-email" name="email" class="form-control" placeholder="jane@example.com" required>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="booking-notes">Brief Overview of Your Situation</label>
-            <textarea id="booking-notes" class="form-control" rows="3" placeholder="Tell us about your tax filing, business entity, or any letter received..."></textarea>
+            <textarea id="booking-notes" name="notes" class="form-control" rows="3" placeholder="Tell us about your tax filing, business entity, or any letter received..."></textarea>
           </div>
 
           <div class="callout" style="margin-bottom:18px;font-size:.82rem">
@@ -92,11 +99,64 @@ function createBookingModalDOM() {
 window.handleBookingSubmit = function(e) {
   e.preventDefault();
   const form = e.target;
-  const nameInput = form.querySelector('#booking-name') || form.querySelector('#page-booking-name') || form.querySelector('input[type="text"]');
-  const emailInput = form.querySelector('#booking-email') || form.querySelector('#page-booking-email') || form.querySelector('input[type="email"]');
-  const name = nameInput ? nameInput.value : 'Taxpayer';
-  const email = emailInput ? emailInput.value : 'your email address';
 
+  // Gather fields
+  const nameInput  = form.querySelector('#booking-name')  || form.querySelector('#page-booking-name')  || form.querySelector('input[type="text"]');
+  const emailInput = form.querySelector('#booking-email') || form.querySelector('#page-booking-email') || form.querySelector('input[type="email"]');
+  const phoneInput = form.querySelector('#booking-phone') || form.querySelector('#page-booking-phone') || form.querySelector('input[type="tel"]');
+  const notesInput = form.querySelector('#booking-notes') || form.querySelector('#page-booking-notes') || form.querySelector('textarea');
+  const serviceSelect = form.querySelector('#booking-service') || form.querySelector('#page-booking-service') || form.querySelector('select');
+
+  const name    = nameInput    ? nameInput.value    : 'Taxpayer';
+  const email   = emailInput   ? emailInput.value   : '';
+  const phone   = phoneInput   ? phoneInput.value   : '';
+  const notes   = notesInput   ? notesInput.value   : '';
+  const service = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex].text : 'General Inquiry';
+
+  // Build FormSubmit payload and POST to Tax@pivotaide.com via AJAX
+  const submitUrl = 'https://formsubmit.co/ajax/Tax@pivotaide.com';
+  const payload = {
+    name: name,
+    email: email,
+    phone: phone,
+    service: service,
+    notes: notes,
+    _subject: 'Pivot Aide Tax — Appointment Request: ' + service,
+    _template: 'table',
+    _captcha: 'false'
+  };
+
+  // Show sending state
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026'; }
+
+  fetch(submitUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(function(res) {
+      showBookingSuccess(form, name, email);
+    })
+    .catch(function() {
+      // Fallback: no-cors fetch
+      var formData = new FormData(form);
+      if (!formData.get('name')) formData.append('name', name);
+      if (!formData.get('email')) formData.append('email', email);
+      if (!formData.get('phone')) formData.append('phone', phone);
+      if (!formData.get('service')) formData.append('service', service);
+      if (!formData.get('notes')) formData.append('notes', notes);
+      fetch('https://formsubmit.co/Tax@pivotaide.com', { method: 'POST', body: formData, mode: 'no-cors' })
+        .finally(function() {
+          showBookingSuccess(form, name, email);
+        });
+    });
+};
+
+function showBookingSuccess(form, name, email) {
   const modalBody = form.closest('.modal-body') || form.closest('.card') || form.parentElement;
   if (modalBody) {
     modalBody.innerHTML = `
@@ -114,7 +174,7 @@ window.handleBookingSubmit = function(e) {
       </div>
     `;
   }
-};
+}
 
 
 window.viewChecklist = function(tradeName) {
