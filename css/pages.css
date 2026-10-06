@@ -5218,9 +5218,9 @@ footer .fine a:hover {
   flex-direction: column;
   gap: 10px;
   padding: 28px 24px 24px;
-  background: #ffffff;
-  border: 1px solid #E3E8ED;
-  border-top: 2px solid #E3E8ED;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--blue);
   border-radius: 8px;
   cursor: default;
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
@@ -5229,6 +5229,32 @@ footer .fine a:hover {
               opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
   z-index: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .support-pillar-card {
+    background: #0E2430;
+    border-color: #1F4558;
+    border-top-color: #3FB4FF;
+  }
+  :root:not([data-theme="light"]) .support-card-h3 {
+    color: #FFFFFF !important;
+  }
+  :root:not([data-theme="light"]) .support-pillar-card p {
+    color: #B2CBD8 !important;
+  }
+}
+
+:root[data-theme="dark"] .support-pillar-card {
+  background: #0E2430;
+  border-color: #1F4558;
+  border-top-color: #3FB4FF;
+}
+:root[data-theme="dark"] .support-card-h3 {
+  color: #FFFFFF !important;
+}
+:root[data-theme="dark"] .support-pillar-card p {
+  color: #B2CBD8 !important;
 }
 
 .support-tag {
@@ -6332,7 +6358,7 @@ footer .fine a:hover {
 
 .indiv-card {
   position: relative;
-  background: #FFFFFF;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   padding: 30px 28px;
@@ -6510,7 +6536,7 @@ footer .fine a:hover {
 
 .policy-card {
   position: relative;
-  background: #FFFFFF;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   padding: 30px 28px;
@@ -6691,7 +6717,204 @@ footer .fine a:hover {
     transform: none !important;
     opacity: 1 !important;
     letter-spacing: 0.14em !important;
+}
+}
+
+/* ── Dark Mode Adaptations for New Law Cards & Callouts ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .indiv-card,
+  :root:not([data-theme="light"]) .policy-card {
+    background: #0E2430;
+    border-color: #1F4558;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   }
+
+  :root:not([data-theme="light"]) .indiv-card h3,
+  :root:not([data-theme="light"]) .policy-card h3 {
+    color: #FFFFFF !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-card p,
+  :root:not([data-theme="light"]) .policy-card p {
+    color: #B2CBD8 !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-card .monetary-cap,
+  :root:not([data-theme="light"]) .policy-card .monetary-cap {
+    color: #3FB4FF !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-tag,
+  :root:not([data-theme="light"]) .policy-tag {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #8EB4C8;
+  }
+
+  :root:not([data-theme="light"]) .indiv-tag b,
+  :root:not([data-theme="light"]) .policy-tag b {
+    color: #3FB4FF;
+  }
+
+  :root:not([data-theme="light"]) .indiv-tag.is-illuminated,
+  :root:not([data-theme="light"]) .policy-tag-reverts.is-illuminated,
+  :root:not([data-theme="light"]) .policy-tag-new.is-illuminated {
+    background: rgba(234, 228, 47, 0.14);
+    border-color: rgba(234, 228, 47, 0.4);
+    color: #EAE42F;
+    box-shadow: 0 0 14px rgba(234, 228, 47, 0.25);
+  }
+
+  :root:not([data-theme="light"]) .indiv-tag.is-illuminated b,
+  :root:not([data-theme="light"]) .policy-tag-reverts.is-illuminated .policy-tag-status,
+  :root:not([data-theme="light"]) .policy-tag-new.is-illuminated .policy-tag-status {
+    color: #FFF275;
+  }
+
+  :root:not([data-theme="light"]) .policy-tag-perm.is-illuminated {
+    background: rgba(1, 159, 255, 0.18);
+    border-color: rgba(1, 159, 255, 0.55);
+    color: #7CCBFF;
+    box-shadow: 0 0 14px rgba(1, 159, 255, 0.3);
+  }
+
+  :root:not([data-theme="light"]) .policy-tag-perm.is-illuminated .policy-tag-status {
+    color: #3FB4FF;
+  }
+
+  :root:not([data-theme="light"]) .indiv-sched1a-callout {
+    background: #0A2230 !important;
+    border: 1px solid rgba(1, 159, 255, 0.3) !important;
+    border-left: 4px solid #3FB4FF !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-sched1a-h {
+    color: #3FB4FF !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-sched1a-callout p {
+    color: #B2CBD8 !important;
+  }
+
+  :root:not([data-theme="light"]) .indiv-sched1a-callout strong,
+  :root:not([data-theme="light"]) .indiv-sched1a-callout b {
+    color: #FFFFFF !important;
+  }
+
+  :root:not([data-theme="light"]) .sunset-alert-banner {
+    background: #1C1810 !important;
+    border: 1px solid rgba(217, 119, 6, 0.35) !important;
+  }
+
+  :root:not([data-theme="light"]) .sunset-eyebrow {
+    color: #F59E0B !important;
+  }
+
+  :root:not([data-theme="light"]) .sunset-alert-banner p {
+    color: #D3BCA6 !important;
+  }
+
+  :root:not([data-theme="light"]) .sunset-alert-banner strong,
+  :root:not([data-theme="light"]) .sunset-alert-banner b {
+    color: #FFFDF8 !important;
+  }
+}
+
+:root[data-theme="dark"] .indiv-card,
+:root[data-theme="dark"] .policy-card {
+  background: #0E2430;
+  border-color: #1F4558;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme="dark"] .indiv-card h3,
+:root[data-theme="dark"] .policy-card h3 {
+  color: #FFFFFF !important;
+}
+
+:root[data-theme="dark"] .indiv-card p,
+:root[data-theme="dark"] .policy-card p {
+  color: #B2CBD8 !important;
+}
+
+:root[data-theme="dark"] .indiv-card .monetary-cap,
+:root[data-theme="dark"] .policy-card .monetary-cap {
+  color: #3FB4FF !important;
+}
+
+:root[data-theme="dark"] .indiv-tag,
+:root[data-theme="dark"] .policy-tag {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #8EB4C8;
+}
+
+:root[data-theme="dark"] .indiv-tag b,
+:root[data-theme="dark"] .policy-tag b {
+  color: #3FB4FF;
+}
+
+:root[data-theme="dark"] .indiv-tag.is-illuminated,
+:root[data-theme="dark"] .policy-tag-reverts.is-illuminated,
+:root[data-theme="dark"] .policy-tag-new.is-illuminated {
+  background: rgba(234, 228, 47, 0.14);
+  border-color: rgba(234, 228, 47, 0.4);
+  color: #EAE42F;
+  box-shadow: 0 0 14px rgba(234, 228, 47, 0.25);
+}
+
+:root[data-theme="dark"] .indiv-tag.is-illuminated b,
+:root[data-theme="dark"] .policy-tag-reverts.is-illuminated .policy-tag-status,
+:root[data-theme="dark"] .policy-tag-new.is-illuminated .policy-tag-status {
+  color: #FFF275;
+}
+
+:root[data-theme="dark"] .policy-tag-perm.is-illuminated {
+  background: rgba(1, 159, 255, 0.18);
+  border-color: rgba(1, 159, 255, 0.55);
+  color: #7CCBFF;
+  box-shadow: 0 0 14px rgba(1, 159, 255, 0.3);
+}
+
+:root[data-theme="dark"] .policy-tag-perm.is-illuminated .policy-tag-status {
+  color: #3FB4FF;
+}
+
+:root[data-theme="dark"] .indiv-sched1a-callout {
+  background: #0A2230 !important;
+  border: 1px solid rgba(1, 159, 255, 0.3) !important;
+  border-left: 4px solid #3FB4FF !important;
+}
+
+:root[data-theme="dark"] .indiv-sched1a-h {
+  color: #3FB4FF !important;
+}
+
+:root[data-theme="dark"] .indiv-sched1a-callout p {
+  color: #B2CBD8 !important;
+}
+
+:root[data-theme="dark"] .indiv-sched1a-callout strong,
+:root[data-theme="dark"] .indiv-sched1a-callout b {
+  color: #FFFFFF !important;
+}
+
+:root[data-theme="dark"] .sunset-alert-banner {
+  background: #1C1810 !important;
+  border: 1px solid rgba(217, 119, 6, 0.35) !important;
+}
+
+:root[data-theme="dark"] .sunset-eyebrow {
+  color: #F59E0B !important;
+}
+
+:root[data-theme="dark"] .sunset-alert-banner p {
+  color: #D3BCA6 !important;
+}
+
+:root[data-theme="dark"] .sunset-alert-banner strong,
+:root[data-theme="dark"] .sunset-alert-banner b {
+  color: #FFFDF8 !important;
 }
 
 /* ============================================================

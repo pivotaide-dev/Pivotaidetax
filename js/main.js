@@ -36,6 +36,7 @@ function initNavigation() {
       toggleBtn.innerHTML = isOpen
         ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>`
         : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>`;
+      document.body.style.overflow = isOpen ? 'hidden' : '';
 
       if (isOpen) {
         const items = drawer.querySelectorAll(':scope > a, :scope > .mobile-dropdown-group, :scope > div');
@@ -58,6 +59,7 @@ function initNavigation() {
     drawer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         drawer.classList.remove('open');
+        document.body.style.overflow = '';
         toggleBtn.setAttribute('aria-expanded', 'false');
         toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>`;
       });
