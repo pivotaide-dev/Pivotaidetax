@@ -20,7 +20,7 @@
     gsap.registerPlugin(ScrollTrigger);
 
     ScrollTrigger.config({
-      autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
+      autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize,pageshow',
       ignoreMobileResize: true
     });
 

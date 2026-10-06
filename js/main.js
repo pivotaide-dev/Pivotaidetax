@@ -16,6 +16,34 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatCounters();
 });
 
+// Back-Forward Cache (bfcache) Lifecycle Management
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    // In local development (e.g. VS Code Live Server on localhost / 127.0.0.1),
+    // entering bfcache closes the live reload WebSocket.
+    // Seamlessly reload to re-establish the connection and avoid stale cache:
+    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+      window.location.reload();
+      return;
+    }
+
+    // In production, reset any stuck UI scroll locks and refresh animations
+    document.body.style.overflow = '';
+    const drawer = document.getElementById('mobile-drawer');
+    const toggleBtn = document.getElementById('nav-toggle');
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.classList.remove('open');
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>`;
+      }
+    }
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+  }
+});
+
 function initNavigation() {
   const toggleBtn = document.getElementById('nav-toggle');
   const drawer = document.getElementById('mobile-drawer');
