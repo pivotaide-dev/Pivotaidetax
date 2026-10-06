@@ -4885,32 +4885,38 @@ footer .fine a:hover {
 }
 
 /* Uncle Pat's Read Callout */
+.callout.triage-callout,
 .triage-callout {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-left: 3px solid #EAE42F !important;
-  padding: 12px 16px;
-  border-radius: 0 4px 4px 0;
+  background: rgba(3, 14, 22, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 3.5px solid #EAE42F !important;
+  padding: 14px 18px;
+  border-radius: 0 var(--r-md, 8px) var(--r-md, 8px) 0;
   margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .triage-callout-tag {
   display: block;
   font-family: var(--f-mono, monospace);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #EAE42F;
+  color: #EAE42F !important;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
+.triage-callout p,
+.triage-callout .triage-callout-quote,
 .triage-callout-quote {
   font-family: var(--f-serif, Georgia, serif);
   font-style: italic;
   font-size: 0.96rem;
-  line-height: 1.45;
-  color: #FFFFFF;
+  line-height: 1.5;
+  color: #F0F6FA !important;
   margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 /* Drawer Bottom Actions Deck */
