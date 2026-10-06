@@ -7359,7 +7359,7 @@
         const footerTargets = [brandCol, ...navCols, legalNote].filter(Boolean);
         if (footerTargets.length) {
           gsap.fromTo(footerTargets,
-            { y: 20, opacity: 0.2 },
+            { y: 0, opacity: 1 },
             {
               y:        0,
               opacity:  1,
