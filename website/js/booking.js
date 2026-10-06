@@ -158,7 +158,7 @@ function createBookingModalDOM() {
             </select>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-row-2col">
             <div class="form-group">
               <label class="form-label" for="booking-name">Full Name</label>
               <input type="text" id="booking-name" name="name" class="form-control" placeholder="Jane Doe" required>
@@ -181,7 +181,7 @@ function createBookingModalDOM() {
 
           <div class="form-group" id="booking-file-group">
             <label class="form-label" id="booking-file-label" for="booking-file">Upload Notice or Document <span style="font-weight:400;color:var(--ink-2);font-size:0.75rem;text-transform:none">(PDF, Images &middot; Max 10MB)</span></label>
-            <div class="file-upload-box" id="booking-dropzone" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--wash,#F8FAFC);cursor:pointer;transition:border-color var(--transition-fast), background var(--transition-fast);" onclick="document.getElementById('booking-file').click()">
+            <div class="file-upload-box" id="booking-dropzone" onclick="document.getElementById('booking-file').click()">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
@@ -195,7 +195,7 @@ function createBookingModalDOM() {
                   IRS letter, CP2000, 5071C, state notice, or prior return
                 </div>
               </div>
-              <button type="button" class="btn btn-o" style="padding:5px 12px;font-size:0.78rem;pointer-events:none;flex:none">Browse</button>
+              <button type="button" class="btn btn-o btn-browse" style="pointer-events:none;flex:none">Browse</button>
             </div>
             <input type="file" id="booking-file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" style="display:none" onchange="handleFileSelected(this, 'booking-file-name', 'booking-file-sub')">
           </div>

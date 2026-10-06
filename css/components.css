@@ -6681,3 +6681,101 @@ footer .fine a:hover {
   }
 }
 
+
+/* ---------- Direct Booking Form Card & Mobile Responsive ---------- */
+.booking-form-card {
+  padding: 32px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: 0 4px 16px rgba(12, 29, 40, 0.04);
+}
+
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.file-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--r);
+  background: var(--wash, #F8FAFC);
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.file-upload-box:hover {
+  border-color: var(--blue, #019FFF);
+  background: rgba(1, 159, 255, 0.04);
+}
+
+.file-upload-box .upload-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .booking-form-card {
+    padding: 22px 16px !important;
+  }
+  .split {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .split > * {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 580px) {
+  .booking-form-card {
+    padding: 18px 12px !important;
+    border-radius: 10px;
+  }
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .file-upload-box {
+    padding: 10px 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .file-upload-box .upload-text-wrap {
+    flex: 1 1 180px;
+  }
+  .file-upload-box .btn-browse {
+    padding: 5px 12px;
+    font-size: 0.74rem;
+    margin-left: auto;
+  }
+  #page-booking-file-name, #booking-file-name {
+    font-size: 0.82rem !important;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+  #page-booking-file-sub, #booking-file-sub {
+    font-size: 0.7rem !important;
+  }
+  .form-control {
+    font-size: 0.88rem;
+    padding: 10px 12px;
+    box-sizing: border-box;
+  }
+}
