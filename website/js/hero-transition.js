@@ -152,6 +152,8 @@
         return;
       }
 
+      const dimOverlay = hero ? hero.querySelector('.hero-dim-overlay') : null;
+
       // ─────────────────────────────────────────────────────────────
       // MASTER SCRUBBED TIMELINE (Pins Hero while Section 02 climbs)
       // ─────────────────────────────────────────────────────────────
@@ -162,13 +164,14 @@
           end: '+=100%',            // Duration equals 1 full viewport height
           pin: true,                // Pins Section 01 firmly in place
           pinSpacing: false,        // Enables Section 02 to sweep smoothly over Section 01
-          scrub: 1.0,               // Smooth momentum scrub
+          scrub: 0.5,               // Smooth, responsive momentum scrub without unpin lag
           fastScrollEnd: true,
           anticipatePin: 1,         // Eliminates pin-latch hitching
           invalidateOnRefresh: true,
           onLeaveBack: () => {
-            if (heroShell) gsap.set(heroShell, { opacity: 1, y: 0, scale: 1, filter: 'none' });
+            if (heroShell) gsap.set(heroShell, { opacity: 1, y: 0, scale: 1 });
             if (owlContainer) gsap.set(owlContainer, { opacity: 1, y: 0, scale: 1 });
+            if (dimOverlay) gsap.set(dimOverlay, { opacity: 0 });
             if (hero) gsap.set(hero, { clearProps: 'transform' });
           }
         }
@@ -189,25 +192,32 @@
         0
       );
 
-      // 2. Departing Hero Layer (Section 01): Scale down (1 -> 0.95), lift (y: -30px), fade (opacity: 0.2), blur (8px)
+      // 2. Departing Hero Layer (Section 01): GPU-accelerated depth recede (scale: 0.96, y: -25px, opacity: 0.25)
       if (heroShell) {
         masterTl.to(heroShell, {
-          scale: 0.95,
-          y: -30,
-          opacity: 0.2,
-          filter: 'blur(8px)',
-          ease: 'power2.out',
+          scale: 0.96,
+          y: -25,
+          opacity: 0.25,
+          ease: 'power1.out',
           force3D: true
         }, 0);
       }
 
-      // 3. Uncle Pat Mascot: Independent parallax track (y: -50px, scale: 0.92, opacity: 0)
+      // Smooth radial dim overlay fade
+      if (dimOverlay) {
+        masterTl.to(dimOverlay, {
+          opacity: 0.85,
+          ease: 'power1.out'
+        }, 0);
+      }
+
+      // 3. Uncle Pat Mascot: Independent parallax track (y: -45px, scale: 0.93, opacity: 0)
       if (owlContainer) {
         masterTl.to(owlContainer, {
-          y: -50,
-          scale: 0.92,
+          y: -45,
+          scale: 0.93,
           opacity: 0,
-          ease: 'power2.out',
+          ease: 'power1.out',
           force3D: true
         }, 0);
       }
@@ -396,7 +406,7 @@
           end: '+=100%',
           pin: true,
           pinSpacing: false,
-          scrub: 1.2,
+          scrub: 0.5,
           anticipatePin: 1,
           invalidateOnRefresh: true
         }
@@ -621,7 +631,7 @@
           end: '+=160%',
           pin: true,
           pinSpacing: true,
-          scrub: 1,
+          scrub: 0.5,
           anticipatePin: 1,
           invalidateOnRefresh: true
         }
@@ -989,7 +999,7 @@
           end: '+=160%',
           pin: true,
           pinSpacing: true,
-          scrub: 1,
+          scrub: 0.5,
           anticipatePin: 1,
           invalidateOnRefresh: true
         }
@@ -1006,9 +1016,8 @@
 
       if (introLayer) {
         tl.to(introLayer, {
-          y: -50,
+          y: -40,
           opacity: 0,
-          filter: 'blur(10px)',
           ease: 'power2.inOut'
         }, 0.04);
       }
@@ -1161,7 +1170,7 @@
           trigger: sheet,
           start: 'top bottom',   // fires when sheet bottom edge hits viewport bottom
           end: 'top 10%',        // completes when sheet top is 10% from top
-          scrub: 1.1,
+          scrub: 0.5,
           invalidateOnRefresh: true
         }
       });
@@ -1715,7 +1724,7 @@
             start: 'bottom bottom',
             end: '+=130%',
             pin: true,
-            scrub: 1.1,
+            scrub: 0.5,
             anticipatePin: 1,
             invalidateOnRefresh: true
           }
@@ -1871,18 +1880,17 @@
             start: 'bottom bottom',
             end: '+=100vh',
             pin: true,
-            scrub: 1.1,
+            scrub: 0.5,
             anticipatePin: 1,
             invalidateOnRefresh: true
           }
         });
 
-        // Step 1: White split section content gently recedes (scale: 0.96, y: -35px, opacity: 0.3, blur: 6px)
+        // Step 1: White split section content gently recedes (scale: 0.96, y: -30px, opacity: 0.25)
         wipeTl.to(splitEl, {
           scale: 0.96,
-          y: -35,
-          opacity: 0.3,
-          filter: 'blur(6px)',
+          y: -30,
+          opacity: 0.25,
           ease: 'none',
           force3D: true
         }, 0);

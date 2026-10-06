@@ -801,6 +801,33 @@ function initOwlTracking() {
    ───────────────────────────────────────────────────────────── */
 
 function initHeroEntrance() {
+  const heroShell = document.querySelector('.hero .shell.in');
+  if (heroShell && typeof gsap !== 'undefined') {
+    const textGroup = heroShell.querySelector('div:first-child');
+    const owlEl = document.getElementById('owl-container');
+    if (textGroup) {
+      const items = [
+        textGroup.querySelector('.eyebrow'),
+        textGroup.querySelector('h1'),
+        textGroup.querySelector('.sub'),
+        textGroup.querySelector('.acts'),
+        textGroup.querySelector('.strip')
+      ].filter(Boolean);
+
+      gsap.fromTo(items,
+        { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.75, stagger: 0.08, ease: 'power3.out' }
+      );
+    }
+    if (owlEl) {
+      gsap.fromTo(owlEl,
+        { scale: 0.94, opacity: 0, y: 16 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.85, ease: 'power2.out', delay: 0.12 }
+      );
+    }
+    return;
+  }
+
   const heroHead = document.querySelector('main > section:first-child .sechead, main > section:first-child .hero-intro-col, main > .night.tight .sechead, .legal-page-header .sechead, .app-toolbar');
   if (heroHead) {
     heroHead.classList.add('hero-fade-in');
@@ -815,9 +842,16 @@ function initScrollReveal() {
     return;
   }
 
-  const targets = document.querySelectorAll(
+  const allTargets = Array.from(document.querySelectorAll(
     'main section .sechead, main section .card, main section .pkg, main section .bridge, main .img-split, main section .twrap, main section .callout, main .legal-category-card, main .legal-card, main #business-scorp-calc, main .app-device-wrapper, [data-reveal]'
-  );
+  ));
+
+  // Exclude elements inside containers managed by GSAP ScrollTrigger to prevent animation fighting/stutter
+  const targets = allTargets.filter(el => {
+    return !el.closest(
+      '.scroll-pin-wrapper, .section-thesis, .img-split, .section-year, .section-probs, .services-pinned-stage, .section-audiences-sheet, .pinned-wipe-wrapper, #focus-wipe-wrapper, #pricing-section, #site-footer'
+    );
+  });
 
   if (!targets.length) return;
 
