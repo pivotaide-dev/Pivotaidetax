@@ -14,6 +14,46 @@
   <link rel="stylesheet" href="css/pages.css">
 
   <link rel="icon" type="image/svg+xml" href="assets/brand/uncle-pat-favicon.svg">
+  <!-- BFCache & DevServer WebSocket Guardian -->
+  <script>
+    (function () {
+      if (typeof window === 'undefined' || !('WebSocket' in window)) return;
+      var NativeWS = window.WebSocket;
+      var activeSockets = new Set();
+      window._activeSockets = activeSockets;
+      function TrackedWebSocket(url, protocols) {
+        var ws = protocols !== undefined ? new NativeWS(url, protocols) : new NativeWS(url);
+        activeSockets.add(ws);
+        ws.addEventListener('close', function () { activeSockets.delete(ws); }, { once: true });
+        ws.addEventListener('error', function () { activeSockets.delete(ws); }, { once: true });
+        return ws;
+      }
+      TrackedWebSocket.prototype = NativeWS.prototype;
+      TrackedWebSocket.CONNECTING = NativeWS.CONNECTING;
+      TrackedWebSocket.OPEN = NativeWS.OPEN;
+      TrackedWebSocket.CLOSING = NativeWS.CLOSING;
+      TrackedWebSocket.CLOSED = NativeWS.CLOSED;
+      window.WebSocket = TrackedWebSocket;
+
+      function closeSockets() {
+        activeSockets.forEach(function (ws) {
+          try {
+            if (ws.readyState === NativeWS.OPEN || ws.readyState === NativeWS.CONNECTING) {
+              ws.close(1000, 'BFCache pagehide');
+            }
+          } catch (e) {}
+        });
+        activeSockets.clear();
+      }
+      window.addEventListener('pagehide', closeSockets);
+      window.addEventListener('freeze', closeSockets);
+      window.addEventListener('pageshow', function (e) {
+        if (e.persisted && (location.hostname === '127.0.0.1' || location.hostname === 'localhost')) {
+          location.reload();
+        }
+      });
+    })();
+  </script>
 </head>
 <body>
 

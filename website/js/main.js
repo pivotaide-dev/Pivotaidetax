@@ -1,4 +1,44 @@
 /**
+ * BFCache & DevServer WebSocket Guardian
+ * Intercepts WebSockets to cleanly close them before pagehide/freeze
+ * preventing Chrome "[WebSocket connection failed: Page entered Back-Forward Cache]" violations.
+ */
+(function () {
+  if (typeof window === 'undefined' || !('WebSocket' in window)) return;
+  var NativeWS = window.WebSocket;
+  var activeSockets = new Set();
+  window._activeSockets = activeSockets;
+
+  function TrackedWebSocket(url, protocols) {
+    var ws = protocols !== undefined ? new NativeWS(url, protocols) : new NativeWS(url);
+    activeSockets.add(ws);
+    ws.addEventListener('close', function () { activeSockets.delete(ws); }, { once: true });
+    ws.addEventListener('error', function () { activeSockets.delete(ws); }, { once: true });
+    return ws;
+  }
+  TrackedWebSocket.prototype = NativeWS.prototype;
+  TrackedWebSocket.CONNECTING = NativeWS.CONNECTING;
+  TrackedWebSocket.OPEN = NativeWS.OPEN;
+  TrackedWebSocket.CLOSING = NativeWS.CLOSING;
+  TrackedWebSocket.CLOSED = NativeWS.CLOSED;
+  window.WebSocket = TrackedWebSocket;
+
+  function closeAllSockets(reason) {
+    activeSockets.forEach(function (ws) {
+      try {
+        if (ws.readyState === NativeWS.OPEN || ws.readyState === NativeWS.CONNECTING) {
+          ws.close(1000, reason || 'BFCache pagehide');
+        }
+      } catch (e) {}
+    });
+    activeSockets.clear();
+  }
+
+  window.addEventListener('pagehide', function () { closeAllSockets('pagehide'); });
+  window.addEventListener('freeze', function () { closeAllSockets('freeze'); });
+})();
+
+/**
  * PIVOT AIDE TAX — MAIN JAVASCRIPT
  * Handles mobile navigation, header scroll effects, active states,
  * and global modals.
@@ -39,7 +79,9 @@ window.addEventListener('pageshow', (event) => {
       }
     }
     if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.refresh();
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
     }
   }
 });
@@ -80,8 +122,9 @@ function initNavigation() {
       }
     });
 
-    window.addEventListener('resize', updateDrawerTop);
-    window.addEventListener('scroll', updateDrawerTop, { passive: true });
+    window.addEventListener('resize', () => {
+      if (drawer.classList.contains('open')) updateDrawerTop();
+    });
 
     // Close on link click inside drawer
     drawer.querySelectorAll('a').forEach(link => {
@@ -966,17 +1009,41 @@ function initGlobalScrollProgress() {
     document.body.appendChild(bar);
   }
 
-  function update() {
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    if (docHeight > 0) {
-      const scrolled = (window.scrollY / docHeight) * 100;
-      bar.style.width = `${Math.min(100, Math.max(0, scrolled))}%`;
-    }
+  let ticking = false;
+  let cachedDocHeight = 0;
+
+  function recalc() {
+    cachedDocHeight = document.documentElement.scrollHeight - window.innerHeight;
   }
 
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update, { passive: true });
-  update();
+  function update() {
+    if (cachedDocHeight <= 0) recalc();
+    if (cachedDocHeight > 0) {
+      const scrolled = (window.scrollY / cachedDocHeight) * 100;
+      bar.style.width = `${Math.min(100, Math.max(0, scrolled))}%`;
+    }
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    recalc();
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  requestAnimationFrame(() => {
+    recalc();
+    update();
+  });
 }
 
 function initStatCounters() {

@@ -1405,62 +1405,109 @@
   }
 
   function initAllTransitions() {
+    const has = (sel) => !!document.querySelector(sel);
     const run = (fn) => { try { if (typeof fn === 'function') fn(); } catch(e) {} };
-    run(initCardStackingTransition);
-    run(initSplitStorytellingTransition);
-    run(initYearTimelineScrub);
-    run(initDiagnosticMatrixTransition);
-    run(initServicesPinnedChoreography);
-    run(initAudiencesSheetTransition);
-    run(initPricingCascade);
-    run(initPriceSheetWipe);
-    run(initFocusSheetWipe);
-    run(initFileTaxesHeroTransition);
-    run(initFintechLedgerTable);
-    run(initTaxDialPinnedStorytelling);
-    run(initWorkflowJourneyTransition);
-    run(initFooterUnderlayReveal);
-    run(initFlowAndStates);
-    run(initTaxStrategyHeroTransition);
-    run(initDarkStrategySheetWipe);
-    run(initExposureScoreboard);
-    run(initStandingSplitPinnedSequence);
-    run(initAdvisoryClosingSheetWipe);
-    run(initEngagementScopeTransition);
-    run(initPersonaTracksDarkSheetWipe);
-    run(initScopeDualColumnPinnedCascade);
-    run(initPremiumSupportCascade);
-    run(initQuarterlyCadenceScrub);
-    run(initDialFitPinnedStage);
-    run(initFeeSheetCurtain);
-    run(initNewLawHeroTransition);
-    run(initIndividualDeductionsTransition);
-    run(initLegislativePolicyMatrixTransition);
-    run(initConsultationSplitTransition);
-    run(initBusinessReformsTransition);
-    run(initBusinessAddendaStateWipe);
-    run(initDocStrategicTransition);
-    run(initCitationsFooterBridgeTransition);
-    run(initFreeHelpHeroTransition);
-    run(initDiagnosticToolsAndBridgeTransition);
-    run(initComplimentaryReviewSplitStage);
-    run(initIndustryGuidesMatrix);
-    run(initAuditResolutionHero);
-    run(initNoticeDiagnosticStage);
-    run(initResolutionTiersLedger);
-    run(initAuthoritySplitStage);
-    run(initStateDeskTransition);
-    run(initUnclePatPhilosophyTransition);
-    run(initCircular230ThesisDeck);
-    run(initCredentialDeck);
-    run(initBusinessTransitions);
-    run(initAppointmentsTransitions);
-    run(initFileRoomTransitions);
-    run(initResourcesTransitions);
-    run(initLegalPoliciesTransitions);
 
-    // Recalculate all ScrollTrigger start/end triggers accurately
-    ScrollTrigger.refresh();
+    // 1. Home Page Pinned Sequence
+    if (has('.section-thesis') || has('.hero')) {
+      run(initCardStackingTransition);
+      run(initSplitStorytellingTransition);
+      run(initYearTimelineScrub);
+      run(initDiagnosticMatrixTransition);
+      run(initServicesPinnedChoreography);
+      run(initAudiencesSheetTransition);
+      run(initPricingCascade);
+      run(initPriceSheetWipe);
+      run(initFocusSheetWipe);
+    }
+
+    // 2. File Taxes Pinned Suite
+    if (has('.ft-stage') || has('#ledger-table') || has('.tax-dial-section') || has('.workflow-section')) {
+      run(initFileTaxesHeroTransition);
+      run(initFintechLedgerTable);
+      run(initTaxDialPinnedStorytelling);
+      run(initWorkflowJourneyTransition);
+      run(initFlowAndStates);
+      run(initDialFitPinnedStage);
+      run(initFeeSheetCurtain);
+    }
+
+    // 3. Tax Strategy Pinned Suite
+    if (has('#strategy-hero') || has('#dark-strategy-stage') || has('#exposure-scoreboard') || has('.standing-split-stage')) {
+      run(initTaxStrategyHeroTransition);
+      run(initDarkStrategySheetWipe);
+      run(initExposureScoreboard);
+      run(initStandingSplitPinnedSequence);
+      run(initAdvisoryClosingSheetWipe);
+      run(initEngagementScopeTransition);
+      run(initPersonaTracksDarkSheetWipe);
+      run(initScopeDualColumnPinnedCascade);
+      run(initPremiumSupportCascade);
+      run(initQuarterlyCadenceScrub);
+    }
+
+    // 4. New Law (OBBBA) Pinned Suite
+    if (has('#newlaw-hero') || has('#indiv-section') || has('#biz-reforms-section') || has('#citations-stage') || has('#state-conformity-sheet')) {
+      run(initNewLawHeroTransition);
+      run(initIndividualDeductionsTransition);
+      run(initLegislativePolicyMatrixTransition);
+      run(initConsultationSplitTransition);
+      run(initBusinessReformsTransition);
+      run(initBusinessAddendaStateWipe);
+      run(initDocStrategicTransition);
+      run(initCitationsFooterBridgeTransition);
+    }
+
+    // 5. Free Help Suite
+    if (has('.free-help-hero') || has('.free-help-hero-stage') || has('.diagnostic-tools-section') || has('#review-split-stage') || has('.guides-matrix-section')) {
+      run(initFreeHelpHeroTransition);
+      run(initDiagnosticToolsAndBridgeTransition);
+      run(initComplimentaryReviewSplitStage);
+      run(initIndustryGuidesMatrix);
+    }
+
+    // 6. Audit & Resolution Suite
+    if (has('#audit-hero') || has('#notice-diagnostic') || has('#resolution-tiers') || has('#authority-stage') || has('#state-desk')) {
+      run(initAuditResolutionHero);
+      run(initNoticeDiagnosticStage);
+      run(initResolutionTiersLedger);
+      run(initAuthoritySplitStage);
+      run(initStateDeskTransition);
+    }
+
+    // 7. Meet Uncle Pat Suite
+    if (has('#pat-philosophy') || has('#circular230-deck') || has('#credential-deck')) {
+      run(initUnclePatPhilosophyTransition);
+      run(initCircular230ThesisDeck);
+      run(initCredentialDeck);
+    }
+
+    // 8. Individual Feature Pages
+    if (has('#main > section.night.tight .pkgs') || has('#main .bridge')) {
+      run(initBusinessTransitions);
+    }
+    if (has('#appointments-hero') || has('.appointments-card')) {
+      run(initAppointmentsTransitions);
+    }
+    if (has('#file-room-app') || has('.file-room-stage')) {
+      run(initFileRoomTransitions);
+    }
+    if (has('.imgband') || has('.dates')) {
+      run(initResourcesTransitions);
+    }
+    if (has('.legal-layout')) {
+      run(initLegalPoliciesTransitions);
+    }
+
+    // 9. Global Footer Reveal (when not replaced by custom citations bridge)
+    if (!has('#citations-stage') && has('.footer-hairline')) {
+      run(initFooterUnderlayReveal);
+    }
+
+    // Batch and defer ScrollTrigger refresh to next animation frame
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -4792,15 +4839,21 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       initAllTransitions();
-      setTimeout(() => ScrollTrigger.refresh(), 350);
+      requestAnimationFrame(() => {
+        setTimeout(() => ScrollTrigger.refresh(), 200);
+      });
     });
   } else {
     initAllTransitions();
-    setTimeout(() => ScrollTrigger.refresh(), 350);
+    requestAnimationFrame(() => {
+      setTimeout(() => ScrollTrigger.refresh(), 200);
+    });
   }
 
   window.addEventListener('load', () => {
-    ScrollTrigger.refresh();
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
   });
 
   window.initCardStackingTransition = initCardStackingTransition;
@@ -5977,7 +6030,7 @@
       const pinTl = gsap.timeline({
         scrollTrigger: {
           trigger:             pinnedStage,
-          start:               () => 'top ' + (topbarEl ? topbarEl.offsetHeight : 68) + 'px',
+          start:               'top ' + (topbarEl ? Math.round(topbarEl.clientHeight || 68) : 68) + 'px',
           end:                 '+=110vh',
           pin:                 true,
           scrub:               1.1,
@@ -6131,7 +6184,7 @@
       const pinTl = gsap.timeline({
         scrollTrigger: {
           trigger:             sec,
-          start:               () => 'top ' + (topbarEl ? topbarEl.offsetHeight : 68) + 'px',
+          start:               'top ' + (topbarEl ? Math.round(topbarEl.clientHeight || 68) : 68) + 'px',
           end:                 '+=100vh',
           pin:                 true,
           scrub:               1.1,
