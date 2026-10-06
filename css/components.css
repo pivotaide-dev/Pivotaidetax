@@ -3603,6 +3603,47 @@ footer .fine a:hover {
 .triage-card .callout.gold-callout {
   border-left-color: #EAE42F;
 }
+/* Night-context fix: triage cards live inside .night section but must stay light-surfaced */
+.night .triage-card,
+.free-help-hero-stage .triage-card {
+  background: #FFFFFF !important;
+  border-color: var(--line, #D8E6EE) !important;
+}
+
+.night .triage-card h2,
+.free-help-hero-stage .triage-card h2 {
+  color: #0C1D28 !important;
+}
+
+.night .triage-card p,
+.free-help-hero-stage .triage-card p {
+  color: #3F5A6B !important;
+}
+
+.night .triage-card .ticks li,
+.free-help-hero-stage .triage-card .ticks li {
+  color: #3F5A6B !important;
+}
+
+.night .triage-card .ticks li b,
+.free-help-hero-stage .triage-card .ticks li b {
+  color: #0C1D28 !important;
+}
+
+.night .triage-card .callout,
+.free-help-hero-stage .triage-card .callout {
+  background: #F8FAFC !important;
+}
+
+.night .triage-card .callout .h,
+.free-help-hero-stage .triage-card .callout .h {
+  color: #64748B !important;
+}
+
+.night .triage-card .callout p.small,
+.free-help-hero-stage .triage-card .callout p.small {
+  color: #64748B !important;
+}
 
 .triage-card .callout .h {
   font-family: var(--f-mono, monospace);
