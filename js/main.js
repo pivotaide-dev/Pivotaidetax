@@ -915,11 +915,23 @@ function initScrollReveal() {
     return;
   }
 
+  // On pages with dedicated GSAP ScrollTrigger choreography (new-law, tax-strategy, file-taxes, etc.),
+  // skip generic CSS scroll reveals to prevent transform conflicts and forced reflow violations.
+  const isGsapPage = !!(
+    document.getElementById('newlaw-hero') ||
+    document.getElementById('strategy-hero') ||
+    document.querySelector('.ft-stage') ||
+    document.querySelector('.free-help-hero') ||
+    document.getElementById('audit-hero') ||
+    document.getElementById('pat-philosophy')
+  );
+  if (isGsapPage) return;
+
   const allTargets = Array.from(document.querySelectorAll(
     'main section .sechead, main section .card, main section .pkg, main section .bridge, main .img-split, main section .twrap, main section .callout, main .legal-category-card, main .legal-card, main #business-scorp-calc, main .app-device-wrapper, [data-reveal]'
   ));
 
-  // Exclude elements inside containers managed by GSAP ScrollTrigger to prevent animation fighting/stutter
+  // Exclude elements inside containers managed by GSAP ScrollTrigger
   const targets = allTargets.filter(el => {
     return !el.closest(
       '.scroll-pin-wrapper, .section-thesis, .img-split, .section-year, .section-probs, .services-pinned-stage, .section-audiences-sheet, .pinned-wipe-wrapper, #focus-wipe-wrapper, #pricing-section, #site-footer'

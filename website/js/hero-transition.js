@@ -19,6 +19,27 @@
 
     gsap.registerPlugin(ScrollTrigger);
 
+    // Global performance tuning: debounce ScrollTrigger.refresh to RAF
+    // and restrict auto-refresh events to eliminate forced reflow violations
+    if (!window._stDebounced && typeof ScrollTrigger !== 'undefined') {
+      window._stDebounced = true;
+      ScrollTrigger.config({
+        autoRefreshEvents: 'visibilitychange,DOMContentLoaded,pageshow',
+        ignoreMobileResize: true,
+        limitCallbacks: true
+      });
+      const _origSTRefresh = ScrollTrigger.refresh.bind(ScrollTrigger);
+      let _stRaf = null;
+      ScrollTrigger.refresh = function (safe) {
+        if (safe === true) return _origSTRefresh(true);
+        if (_stRaf) cancelAnimationFrame(_stRaf);
+        _stRaf = requestAnimationFrame(() => {
+          _stRaf = null;
+          _origSTRefresh();
+        });
+      };
+    }
+
     ScrollTrigger.config({
       autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize,pageshow',
       ignoreMobileResize: true
